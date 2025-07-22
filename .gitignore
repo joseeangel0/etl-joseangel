@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Airflow
+logs/
+dags/__pycache__/
+airflow.cfg
+airflow.db
+*.airflow
+
+# Environment files
+.env
+*.env
+
+# VS Code
+.vscode/
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# Jupyter (por si usaste notebooks)
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db

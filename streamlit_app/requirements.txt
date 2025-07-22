@@ -1,0 +1,8 @@
+# TODO: Requisitos del proyecto
+pymongo
+streamlit
+requests
+pandas
+python-dotenv
+plotly
+numpy

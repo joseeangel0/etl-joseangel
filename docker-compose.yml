@@ -1,0 +1,77 @@
+# TODO: Definición de servicios Docker
+# Docker Compose file for Apache Airflow
+# This file tells Docker how to run multiple applications together
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  # This is where Airflow stores all its information (DAGs, task history, etc.)
+  postgres:
+    image: postgres:13                    # Use PostgreSQL version 13
+    environment:                         # Set up database credentials
+      POSTGRES_USER: airflow             # Database username
+      POSTGRES_PASSWORD: airflow         # Database password  
+      POSTGRES_DB: airflow               # Database name
+    volumes:                             # Save data permanently
+      - postgres_data:/var/lib/postgresql/data  # Store database files
+
+  # Airflow Webserver
+  # This is the web interface you see in your browser
+  webserver:
+    build: . #apache/airflow:2.8.1          # Use Airflow version 2.8.1
+    depends_on:                          # Wait for postgres to start first
+      - postgres
+    environment:                         # Configure Airflow settings
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor    # Use local executor (simpler)
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow  # Connect to postgres
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'     # Don't load example DAGs
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'  # Pause new DAGs by default
+      env_file: .env 
+    volumes:                             # Connect local folders to container
+      - ./dags:/opt/airflow/dags         # Your DAG files go here
+      - ./logs:/opt/airflow/logs 
+      - ./requirements.txt:/requirements.txt  
+            # Airflow logs go here
+    ports:                               # Make webserver accessible from browser
+      - "8080:8080"                      # Port 8080 on your computer -> port 8080 in container
+    command: webserver                   # Start the webserver
+
+  # Airflow Scheduler  
+  # This is the "brain" that runs your tasks
+  scheduler:
+    build: . #image: apache/airflow:2.8.1          # Same Airflow image
+    depends_on:                          # Wait for postgres to start first
+      - postgres
+    environment:                         # Same configuration as webserver
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    env_file: .env 
+    volumes:                             # Same folder connections
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+    command: scheduler                   # Start the scheduler
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  streamlit:
+    build: ./streamlit_app
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./streamlit_app:/app
+    depends_on:
+      - mongodb
+    working_dir: /app
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+# Volumes - This is where Docker stores data permanently
+volumes:
+  postgres_data:                         # Database files are stored here 
+  mongo_data:
