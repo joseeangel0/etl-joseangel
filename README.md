@@ -113,12 +113,6 @@ etl-joseangel/
 
 ---
 
-## 📹 Demo Video
-
-➡️ Add your video link here: https://drive.google.com/file/d/1t_rSrqf4imOPB3AUcoOfjHLZ3lhxKDuz/view?usp=sharing
-
----
-
 ## 📊 Future Improvements
 
 - Add more cities or countries
