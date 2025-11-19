@@ -79,9 +79,7 @@ etl-joseangel/
 1. Clone the repository:
    git clone https://github.com/your-repo/etl-joseangel.git
 
-2. Set API credentials:
-   - `OPENWEATHER_API_KEY=83965031b03e36b4b6c55b0831bcf229`
-   - `GEONAMES_USERNAME=joseeangel`
+2. The API keys are loaded from the `.env` file.
 
 3. Start services:
    docker-compose up --build -d
